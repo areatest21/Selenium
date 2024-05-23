@@ -1,0 +1,115 @@
+package Consultora;
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.annotations.Test;
+
+public class Excel {
+
+	public String baseUrl = "https://www.gadgetsnow.com/compare-laptops";
+	String driverPath = "/home/hector/driverselenium/Firefox/geckodriver";
+	public WebDriver driver;
+
+	@Test
+	public void archivo() throws IOException, InterruptedException {
+		System.setProperty("webdriver.gecko.driver", driverPath);
+		driver = new FirefoxDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.get(baseUrl);
+		WebElement boton = driver.findElement(By.xpath("//*[@class='C_rT1']"));
+		boton.click();
+		WebElement boton2 = driver.findElement(By.xpath("//input[@placeholder='Search Laptops']"));
+		boton2.clear();
+		boton2.sendKeys("Lenovo IdeaPad 5 82LN00A3IN");
+		WebElement boton3 = driver.findElement(By.xpath("//*[@class='gveJe']//span/mark"));
+		boton3.click();
+		WebElement boton4 = driver.findElement(By.xpath("//*[@class='C_rT1']"));
+		boton4.click();
+		WebElement boton5 = driver.findElement(By.xpath("//input[@placeholder='Search Laptops']"));
+		boton5.clear();
+		boton5.sendKeys("Lenovo E41-80");
+		WebElement boton6 = driver.findElement(By.xpath("//*[@class='gveJe']//span/mark"));
+		boton6.click();
+		WebElement boton7 = driver.findElement(By.xpath("//*[@class='theme_button ']"));
+		boton7.click();
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("window.scrollBy(0,500)", "");
+		WebElement boton8 = driver.findElement(By.xpath("//*[text()='User Rating']"));
+		if (boton8.isDisplayed()) {
+			List<WebElement> col = driver
+					.findElements(By.xpath("//*[contains(@class,'WtR02 iqpw4')]//table/tbody/tr/th"));
+			int contadorcolumna = col.size();
+			List<WebElement> rows = driver
+					.findElements(By.xpath("//*[contains(@class,'WtR02 iqpw4')]//table/tbody/tr/td"));
+			int fila = rows.size();
+			int contadorfila = fila / contadorcolumna;
+			File file = new File("/home/hector/Descargas/DemoFile.xls");
+			FileInputStream inputStream = new FileInputStream(file);
+			HSSFWorkbook wb = new HSSFWorkbook(inputStream);
+			HSSFSheet sheet = wb.getSheet("Hoja1");
+			int x = 0;
+			for (int column = 0; column < contadorcolumna; column++) {
+				HSSFRow row2 = sheet.createRow(column);
+				String celtext = col.get(column).getText();
+				row2.createCell(0).setCellValue(celtext);
+				int y = 0;
+				for (int filas = x; filas < contadorfila; filas++) {
+					String celtext2 = rows.get(filas).getText();
+					y = y + 1;
+					row2.createCell(y).setCellValue(celtext2);
+				}
+				x = x + 3;
+				contadorfila = contadorfila + 3;
+			}
+			FileOutputStream outputStream = new FileOutputStream("/home/hector/Descargas/DemoFile.xls");
+			wb.write(outputStream);
+			wb.close();
+		} else {
+			WebElement boton9 = driver.findElement(By.xpath("//*[text()='Summary (8)']"));
+			boton9.click();
+			List<WebElement> col = driver
+					.findElements(By.xpath("//*[contains(@class,'WtR02 iqpw4')]//table/tbody/tr/th"));
+			int contadorcolumna = col.size();
+			List<WebElement> rows = driver
+					.findElements(By.xpath("//*[contains(@class,'WtR02 iqpw4')]//table/tbody/tr/td"));
+			int fila = rows.size();
+			int contadorfila = fila / contadorcolumna;
+			File file = new File("/home/hector/Descargas/DemoFile.xls");
+			FileInputStream inputStream = new FileInputStream(file);
+			HSSFWorkbook wb = new HSSFWorkbook(inputStream);
+			HSSFSheet sheet = wb.getSheet("Hoja1");
+			int x = 0;
+			for (int column = 0; column < contadorcolumna; column++) {
+				HSSFRow row2 = sheet.createRow(column);
+				String celtext = col.get(column).getText();
+				row2.createCell(0).setCellValue(celtext);
+				int y = 0;
+				for (int filas = x; filas < contadorfila; filas++) {
+					String celtext2 = rows.get(filas).getText();
+					y = y + 1;
+					row2.createCell(y).setCellValue(celtext2);
+				}
+				x = x + 3;
+				contadorfila = contadorfila + 3;
+			}
+			FileOutputStream outputStream = new FileOutputStream("/home/hector/Descargas/DemoFile.xls");
+			wb.write(outputStream);
+			wb.close();
+		}
+		Thread.sleep(4000);
+		driver.navigate().back();
+		driver.quit();
+	}
+}
